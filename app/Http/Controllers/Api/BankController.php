@@ -10,7 +10,7 @@ class BankController extends Controller
 {
     public function index(Request $request)
     {
-        $banks = $this->formatBanks(Bank::get(), $request->lang);
+        $banks = $this->formatBanks(Bank::get(), app()->getLocale());
 
         return response()->json(['banks' => $banks], 200);
     }
