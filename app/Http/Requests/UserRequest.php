@@ -26,6 +26,7 @@ class UserRequest extends Request
         return [
             'name'      => 'required|string|min:4',
             'email'     => 'required|email|unique:users,email,' . $this->id,
+            'phone'     => 'required|unique:users,phone,' . $this->id,
             'password'  => 'required_without:id',
             'role'      => 'required|exists:roles,id',
         ];
