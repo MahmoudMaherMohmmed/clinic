@@ -15,7 +15,7 @@
                         <div class="box-content">
                             <div class="btn-toolbar pull-right">
                                 <div class="btn-group">
-                                    @if (get_action_icons('specialty/create', 'get'))
+                                    @if (get_action_icons('specialty/create', 'get') && count($specialties) < 1) 
                                         <a class="btn btn-circle show-tooltip" title=""
                                             href="{{ url('specialty/create') }}" data-original-title="Add new record"><i
                                                 class="fa fa-plus"></i></a>
@@ -70,7 +70,7 @@
                                                                 href='{{ url("specialty/$value->id/edit") }}'
                                                                 title="Edit"><i class="fa fa-edit"></i></a>
                                                         @endif
-                                                        @if (get_action_icons('specialty/{id}/delete', 'get'))
+                                                        <!-- @if (get_action_icons('specialty/{id}/delete', 'get'))
                                                             <form action="{{ route('specialty.destroy', $value->id) }}"
                                                                 method="POST" style="display: initial;">
                                                                 @method('DELETE')
@@ -79,7 +79,7 @@
                                                                     style="height: 28px;"><i
                                                                         class="fa fa-trash"></i></button>
                                                             </form>
-                                                        @endif
+                                                        @endif -->
                                                     </div>
                                                 </td>
                                             </tr>
