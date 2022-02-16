@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Appointment;
+use App\Models\Center;
 use App\Models\Reservation;
 use App\Models\Bank;
 use App\Models\BankTransfer;
@@ -26,18 +26,11 @@ class AppointmentController extends Controller
         $this->uploaderService = $uploaderService;
     }
 
-    public function doctorAppointments($doctor_id){
-
-        $appointments = Appointment::where('doctor_id', $doctor_id)->where('status', 0)->get(['date', 'from', 'to']);
-
-        return response()->json(['appointments' => $this->formateDoctorAppointments($appointments)], 200);
-    }
-
-    private function formateDoctorAppointments($appointments){
+    public function appointments(){
         $months = [];
         $days = [];
-
         $available_appointment_duration = $this->getAppointmentAvaliableDuration();
+        $working_days = $this->getWorkingDays();
 
         $month_start_date = null;
         foreach($available_appointment_duration as $day){
@@ -46,22 +39,22 @@ class AppointmentController extends Controller
                 $months[$day->format('Y M')] = [];
                 $days[$day->format('D')] = [];
                 
-                $this->setMonthDaysArrayValues($days, $day, $appointments);
+                $this->setMonthDaysArrayValues($days, $day, $working_days);
             }else{
                 if(($month_start_date->diff($day)->days)+1 == $day->daysInMonth){
-                    $this->setMonthDaysArrayValues($days, $day, $appointments);
+                    $this->setMonthDaysArrayValues($days, $day, $working_days);
                     $months[$day->format('Y M')] =  $days;
                     unset($days);
                 }elseif(count($days)<7 && $month_start_date->diff($day)->days<7){
                     $days[$day->format('D')] = [];
-                    $this->setMonthDaysArrayValues($days, $day, $appointments);
+                    $this->setMonthDaysArrayValues($days, $day, $working_days);
                 }else{
-                    $this->setMonthDaysArrayValues($days, $day, $appointments);
+                    $this->setMonthDaysArrayValues($days, $day, $working_days);
                 }
             }
         }
 
-        return $months;
+        return response()->json(['appointments' => $months], 200);
     }
 
     private function getAppointmentAvaliableDuration(){
@@ -73,8 +66,8 @@ class AppointmentController extends Controller
         return $available_appointment_duration;
     }
 
-    private function setMonthDaysArrayValues(&$days, $day, $appointments){
-        if($this->checkAppointmentDay($day, $appointments)){
+    private function setMonthDaysArrayValues(&$days, $day, $working_days){
+        if($this->checkAppointmentDay($day, $working_days)){
             array_push($days[$day->format('D')], [$day->format('d')=>1]);
         }else{
             array_push($days[$day->format('D')], [$day->format('d')=>0]);
@@ -83,11 +76,19 @@ class AppointmentController extends Controller
         return true;
     }
 
-    private function checkAppointmentDay($day, $appointments){
-        foreach($appointments as $appointment){
-            if($appointment->date >= Carbon::now()->format('Y-m-d') && $appointment->date == $day->format('Y-m-d')){
-                return true;
-            }
+    private function getWorkingDays(){
+        $working_days = [];
+        $center_working_days = Center::first(['working_days']);
+        if(isset($center_working_days) && $center_working_days!=null){
+            $working_days = explode(', ', $center_working_days->working_days);
+        }
+
+        return $working_days;
+    }
+
+    private function checkAppointmentDay($day, $working_days){
+        if( in_array(strtolower($day->format('D')), $working_days) ){
+            return true;
         }
 
         return false;
@@ -95,16 +96,34 @@ class AppointmentController extends Controller
 
     public function dayAppointments(Request $request){
         $appointments = [];
+        $working_days = $this->getWorkingDays();
 
         if(isset($request->date) && $request->date!=null){
-            if($this->formatDate($request->date) == Carbon::now()->format('Y-m-d')){
-                $appointments = Appointment::where('doctor_id', $request->doctor_id)->where('date', $this->formatDate($request->date))->where('from', '>', Carbon::now()->format('H:i A'))->where('status', 0)->get(['id', 'from', 'to', 'status']);
-            }else{
-                $appointments = Appointment::where('doctor_id', $request->doctor_id)->where('date', $this->formatDate($request->date))->where('status', 0)->get(['id', 'from', 'to', 'status']);
+            $day = Carbon::createFromFormat('Y M d', $request->date)->format('D');
+            if( in_array(strtolower($day), $working_days) ){
+                $appointments = $this->workHours();
             }
         }
 
         return response()->json(['appointments' => $appointments], 200);
+    }
+
+    private function workHours(){
+        $hours = [];
+        $center = Center::first();
+
+        if((isset($center->from) && $center->from!=null) && (isset($center->to) && $center->to!=null)){
+            $tStart = strtotime( substr($center->from, 0, strpos($center->from, " ")) );
+            $tEnd = strtotime( substr($center->to, 0, strpos($center->to, " ")) );
+            $tNow = $tStart;
+
+            while($tNow <= $tEnd){
+                array_push($hours, [date('H:i A',$tNow)=>1]);
+                $tNow = strtotime('+60 minutes',$tNow);
+            }
+        }
+
+        return $hours;
     }
 
     private function formatDate($date){
@@ -113,7 +132,8 @@ class AppointmentController extends Controller
 
     public function reserveAppointment(Request $request){
         $Validated = Validator::make($request->all(), [
-            'appointment_id' => 'required',
+            'date' => 'required',
+            'from' => 'required',
             'patient_name' => 'required|min:3',
             'phone_number' => 'required',
             'age' => 'required',
@@ -128,27 +148,18 @@ class AppointmentController extends Controller
 
         $reservation = new Reservation();
         $reservation->client_id = $request->user()->id;
-        $reservation->fill($request->only('appointment_id', 'patient_name', 'phone_number', 'gender', 'age', 'description', 'payment_type'));
+        $reservation->fill($request->only('date', 'from', 'patient_name', 'phone_number', 'gender', 'age', 'description', 'payment_type'));
+        $reservation->to = date('H:i A', (strtotime(substr($request->from, 0, 5)) + (60*60)) );
         if($reservation->save()){
 
             if($reservation->payment_type == 1){
                 $this->saveBankTransfer($request, $reservation->id);
             }
 
-            $this->updateAppointmentStatus($request->appointment_id);
-
             return response()->json(['message' => 'appointment reserved successfully.'], 200);
         }else{
             return response()->json(['message' => 'an error occurred.'], 200);
         }  
-    }
-
-    private function updateAppointmentStatus($appointment_id){
-        $appointment = Appointment::where('id', $appointment_id)->first();
-        $appointment->status = 1;
-        $appointment->save();
-
-        return true;
     }
 
     private function saveBankTransfer($request, $reservation_id){
@@ -175,10 +186,7 @@ class AppointmentController extends Controller
         $reservations = Reservation::where('client_id', $client_id)->get();
         if(isset($reservations) && $reservations!=null){
             foreach($reservations as $reservation){
-                if(isset($reservation->appointment) && $reservation->appointment!=null && isset($reservation->appointment->doctor) && $reservation->appointment->doctor!=null)
-                {
-                    array_push($reservations_array, $this->formatReservation($reservation, $request->lang));
-                }
+                array_push($reservations_array, $this->formatReservation($reservation, $request->lang));
             }
         }
 

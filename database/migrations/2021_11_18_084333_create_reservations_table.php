@@ -19,7 +19,7 @@ class CreateReservationsTable extends Migration
             $table->date('date');
             $table->string('from');
             $table->string('to');
-            $table->string('patient_name');
+            $table->string('patient_name'); 
             $table->string('phone_number');
             $table->integer('age');
             $table->integer('gender')->default(0)->comment('0=>Male, 1=>Female');

@@ -39,7 +39,7 @@ Route::middleware('localization')->group(function () {
         Route::post('profile/update', 'Api\ClientController@UpdateProfile');
         Route::post('profile/update/image', 'Api\ClientController@updateProfileImage');
         Route::post('profile/update_password', 'Api\ClientController@updatePassword');
-        Route::get('appointments/{doctor_id}', 'Api\AppointmentController@doctorAppointments');
+        Route::get('appointments', 'Api\AppointmentController@appointments');
         Route::post('day_appointments', 'Api\AppointmentController@dayAppointments');
         route::post('appointment/reserve', 'Api\AppointmentController@reserveAppointment');
         route::post('client/reservation', 'Api\AppointmentController@clientReservations');
