@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reservation;
 use App\Models\Client;
+use App\Models\Notification;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
 
@@ -97,6 +98,7 @@ class ReservationController extends Controller
         }
         
         $doctor->save();
+        $this->sendNotification($reservation);
         \Session::flash('success', trans('messages.Added Successfully'));
         return redirect('/doctor');
     }
@@ -151,6 +153,8 @@ class ReservationController extends Controller
         $reservation->fill($request->all());
         $reservation->save();
 
+        $this->sendNotification($reservation);
+        
         \Session::flash('success', trans('messages.updated successfully'));
         return redirect('/reservation');
     }
@@ -182,6 +186,45 @@ class ReservationController extends Controller
         $appointment = $reservation->appointment;
         $appointment->status = 0;
         $appointment->save();
+
+        return true;
+    }
+
+    private function sendNotification($reservation){
+        $client = Client::where('id', $reservation->client_id)->first();
+        $notification = null;
+        $title = null;
+        $body = null;
+
+        if($reservation->status == 1){
+            $title = 'اضافة الطلب';
+            $body = 'تم اضافة طلبك بنجاح سيتم مراجعة الطلب والتواصل معكم فى اقرب وقت ممكن.';
+            $notification = array("title" => $title, "body" => $body);
+
+        }elseif($reservation->status == 2){
+            $title = 'قبول الطلب';
+            $body = 'تم قبول طلبك بنجاح يمكنك الان مراجعة طلبك فى حجوزاتى وسيتم التواصل معكم قبيل موعد الحجز مباشر.';
+            $notification = array("title" => $title, "body" => $body);
+        }else{
+            $title = 'الغاء الطلب';
+            $body = 'تم الغاء طلبكم يرجى محاولت اضافة موعد مره اخرى او التواصل مع الاداره من خلال الارقام الموضحه فى التطبيق للاستفسار عن اسباب عدم قبول الطلب.';
+            $notification = array("title" => $title, "body" => $body);
+        }
+        
+        if(isset($client) && $client!=null){
+            sendNotification($client->device_token, $notification);
+            $this->saveNotifications($client->id, $title, $body);
+        }
+
+        return true;
+    }
+
+    private function saveNotifications($client_id, $title, $body){
+        $notification = new Notification();
+        $notification->client_id = $client_id;
+        $notification->title = $title;
+        $notification->body = $body;
+        $notification->save();
 
         return true;
     }

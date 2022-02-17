@@ -252,3 +252,40 @@ function emails()
     return $emails;
 }
 
+ /**
+ * Write code on Method
+ *
+ * @return response()
+ */
+function sendNotification($device_token, $message)
+{
+    $SERVER_API_KEY = 'AAAAVX_oLro:APA91bEvfjI1lDjDkDYwiBEgKIIyau0i881SXWF5YuwWK4kDO61Xk9_RfUKs-Ne8Kw8RC3df7pPGgPnBDtudUl5UV2OSJXJ0eeV17eU-TZ6jp4nbd3ckA2V3ApL-hohSJhmwYGC4_D-U';
+
+    // payload data, it will vary according to requirement
+    $data = [
+        "to" => $device_token, // for single device id
+        "notification" => $message
+    ];
+    $dataString = json_encode($data);
+
+    $headers = [
+        'Authorization: key=' . $SERVER_API_KEY,
+        'Content-Type: application/json',
+    ];
+
+    $ch = curl_init();
+    
+    curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+            
+    $response = curl_exec($ch);
+
+    curl_close ( $ch );
+
+    return $response;
+}
+
