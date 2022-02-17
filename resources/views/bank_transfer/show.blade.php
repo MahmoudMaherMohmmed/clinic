@@ -24,15 +24,11 @@
                                         </tr>
                                         <tr>
                                             <td> @lang('messages.appointments.date') </td>
-                                            <td> {{ $bank_transfer->reservation->appointment->date }} </td>
+                                            <td> {{ $bank_transfer->reservation->date }} </td>
                                         </tr>
                                         <tr>
                                             <td> @lang('messages.appointments.time') </td>
-                                            <td> {{ $bank_transfer->reservation->appointment->from }} </td>
-                                        </tr>
-                                        <tr>
-                                            <td>@lang('messages.name')</td>
-                                            <td> {{ $bank_transfer->reservation->appointment->doctor->getTranslation('name', Session::get('applocale')) }} </td>
+                                            <td> {{ $bank_transfer->reservation->from }} </td>
                                         </tr>
                                         <tr>
                                             <td> @lang('messages.bank_transfers.bank_name') </td>
