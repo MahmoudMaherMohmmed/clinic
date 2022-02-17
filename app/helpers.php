@@ -103,6 +103,7 @@ function get_static_routes()
         Route::Resource('bank', 'BankController');
         Route::Resource('bank_transfer', 'BankTransferController');
         Route::get('send_notification/{device_token}', 'NotificationController@send');
+        Route::Resource('news', 'NewsController');
     });
 
 

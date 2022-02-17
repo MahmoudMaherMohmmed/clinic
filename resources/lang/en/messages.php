@@ -465,5 +465,10 @@ return [
         'IBAN' => 'IBAN',
         'image' => 'Image',
     ],
+
+    'news'=>[
+        'news' => 'News',
+        'create_news' => 'Create News',
+    ],
     
 ];
