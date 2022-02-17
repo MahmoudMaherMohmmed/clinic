@@ -31,7 +31,6 @@
                                             <th style="width:18px"><input type="checkbox" id="check_all" data-table="{{ $table_name }}"></th>
                                             <th>id</th>
                                             <th>@lang('messages.reservations.client_name')</th>
-                                            <th>@lang('messages.name')</th>
                                             <th>@lang('messages.appointments.date')</th>
                                             <th>@lang('messages.bank_transfers.bank_name')</th>
                                             <th>@lang('messages.bank_transfers.bank_account_number')</th>
@@ -45,8 +44,7 @@
                                                 </td>
                                                 <td>{{ $value->id }}</td>
                                                 <td> {{ $value->reservation->client->name }} </td>
-                                                <td> {{ $value->reservation->appointment->doctor->getTranslation('name', Session::get('applocale')) }} </td>
-                                                <td> {{ $value->reservation->appointment->date }} - {{ $value->reservation->appointment->from }} </td>
+                                                <td> {{ $value->reservation->date }} - {{ $value->reservation->from }} </td>
                                                 <td> {{ $value->bank_name }} </td>
                                                 <td> {{ $value->bank_account_number }} </td>
 
