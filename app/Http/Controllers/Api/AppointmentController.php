@@ -102,14 +102,15 @@ class AppointmentController extends Controller
         if(isset($request->date) && $request->date!=null){
             $day = Carbon::createFromFormat('Y M d', $request->date)->format('D');
             if( in_array(strtolower($day), $working_days) ){
-                $appointments = $this->workHours();
+                $day_date = Carbon::createFromFormat('Y M d', $request->date)->format('Y-m-d');
+                $appointments = $this->workHours($day_date);
             }
         }
 
         return response()->json(['appointments' => $appointments], 200);
     }
 
-    private function workHours(){
+    private function workHours($day_date){
         $hours = [];
         $center = Center::first();
 
@@ -119,7 +120,10 @@ class AppointmentController extends Controller
             $tNow = $tStart;
 
             while($tNow <= $tEnd){
-                array_push($hours, ["from"=>date('H:i A',$tNow), "status"=>1]);
+                $reservation = Reservation::where('date', $day_date)->where('from', date('H:i A',$tNow))->first();
+                if($reservation == null){
+                    array_push($hours, ["from"=>date('H:i A',$tNow), "status"=>1]);
+                }
                 $tNow = strtotime('+60 minutes',$tNow);
             }
         }
