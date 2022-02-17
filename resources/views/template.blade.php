@@ -379,6 +379,21 @@ if (Config::get('languages')[App::getLocale()] == "English") {
                     @endif -->
 
                     <ul class="nav nav-list">
+                        <li id="news">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="fa fa-newspaper-o"></i>
+                                <span>@lang('messages.news.news')</span>
+                                <b class="arrow fa fa-angle-right"></b>
+                            </a>
+
+                            <ul class="submenu">
+                                <li id="news_index"><a href="{{url('news')}}">@lang('messages.news.news')</a></li>
+                                <li id="news_create"><a href="{{url('news/create')}}">@lang('messages.news.create_news')</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="nav nav-list">
                         <li id="specialty">
                             <a href="#" class="dropdown-toggle">
                                 <i class="fa fa-list-alt"></i>
