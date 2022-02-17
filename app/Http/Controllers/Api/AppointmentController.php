@@ -196,11 +196,11 @@ class AppointmentController extends Controller
     }
 
     private function formatReservation($reservation, $lang){
-        $reservation = [];
+        $reservation_array = [];
         $doctor = Doctor::first();
 
         if(isset($doctor) && $doctor!=null){
-            $reservation = [
+            $reservation_array = [
                 'order_id' => '#'.$reservation->id,
                 'doctor' => $doctor->getTranslation('name', $lang),
                 'doctor_image' => $doctor->image != null ? url($doctor->image) : '',
@@ -213,7 +213,7 @@ class AppointmentController extends Controller
             ];
         }
 
-        return $reservation;
+        return $reservation_array;
     }
 
       /**
