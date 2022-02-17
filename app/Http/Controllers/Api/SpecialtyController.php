@@ -10,7 +10,7 @@ class SpecialtyController extends Controller
 {
     public function index(Request $request)
     {
-        $specialties = $this->formatSpecialties(Specialty::get(), $request->lang);
+        $specialties = $this->formatSpecialties(Specialty::get(), app()->getLocale());
 
         return response()->json(['specialties' => $specialties]);
     }
@@ -21,8 +21,8 @@ class SpecialtyController extends Controller
         foreach($specialties as $specialty){
             array_push($specialties_array, [
                 'id' => $specialty->id,
-                'title' => isset($lang) && $lang!=null ? $specialty->getTranslation('title', $lang) : $specialty->title,
-                'description' => isset($lang) && $lang!=null ? $specialty->getTranslation('description', $lang) : $specialty->description,
+                'title' => $specialty->getTranslation('title', $lang),
+                'description' => $specialty->getTranslation('description', $lang),
                 'image' => isset($specialty->image) && $specialty->image!=null ? url($specialty->image) : '',
                 'doctors_count' => $specialty->doctors->count(),
                 'doctors' => $this->formatDoctors($specialty, $lang),
@@ -37,7 +37,7 @@ class SpecialtyController extends Controller
         $specialty = Specialty::where('id', $id)->first();
 
         if(isset($specialty) && $specialty!=null){
-            $specialty_data = $this->formatSpecialty($specialty, $request->lang);
+            $specialty_data = $this->formatSpecialty($specialty, app()->getLocale());
         }
 
         return response()->json(['specialty' => $specialty_data]);
@@ -46,8 +46,8 @@ class SpecialtyController extends Controller
     private function formatSpecialty($specialty, $lang){
         $specialty_array = [
             'id' => $specialty->id,
-            'title' => isset($lang) && $lang!=null ? $specialty->getTranslation('title', $lang) : $specialty->title,
-            'description' => isset($lang) && $lang!=null ? $specialty->getTranslation('description', $lang) : $specialty->description,
+            'title' => $specialty->getTranslation('title', $lang),
+            'description' => $specialty->getTranslation('description', $lang),
             'image' => isset($specialty->image) && $specialty->image!=null ? url($specialty->image) : '',
             'doctors_count' => $specialty->doctors->count(),
             'doctors' => $this->formatDoctors($specialty, $lang),
@@ -67,9 +67,9 @@ class SpecialtyController extends Controller
             foreach($doctors as $doctor){
                 array_push($doctors_array,[
                     'id' => $doctor->id,
-                    'name' => isset($lang) && $lang!=null ? $doctor->getTranslation('name', $lang) : $doctor->name,
-                    'subspecialty' => isset($lang) && $lang!=null ? $doctor->getTranslation('subspecialty', $lang) : $doctor->subspecialty,
-                    'graduation_university' => isset($lang) && $lang!=null ? $doctor->getTranslation('graduation_university', $lang) : $doctor->graduation_university,
+                    'name' => $doctor->getTranslation('name', $lang),
+                    'subspecialty' => $doctor->getTranslation('subspecialty', $lang),
+                    'graduation_university' => $doctor->getTranslation('graduation_university', $lang),
                     'medical_examination_price' => $doctor->medical_examination_price,
                     'image' => isset($doctor->image) && $doctor->image != null ? url($doctor->image) : '',
                 ]);
