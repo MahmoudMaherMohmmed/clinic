@@ -54,8 +54,8 @@
                                                 <td>{{$value->patient_name}}</td>
                                                 <td>{{$value->phone_number}}</td>
                                                 <td>{{$value->age}}</td>
-                                                <td>{{$value->appointment->date}}</td>
-                                                <td>{{$value->appointment->from}}</td>
+                                                <td>{{$value->date}}</td>
+                                                <td>{{$value->from}}</td>
                                                 <td>
                                                     @if($value->payment_type == 1)
                                                     <a class="show-tooltip"
