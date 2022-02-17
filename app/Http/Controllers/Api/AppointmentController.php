@@ -187,7 +187,7 @@ class AppointmentController extends Controller
         $reservations = Reservation::where('client_id', $client_id)->get();
         if(isset($reservations) && $reservations!=null){
             foreach($reservations as $reservation){
-                array_push($reservations_array, $this->formatReservation($reservation, $request->lang));
+                array_push($reservations_array, $this->formatReservation($reservation, app()->getLocale()));
             }
         }
 
@@ -195,17 +195,22 @@ class AppointmentController extends Controller
     }
 
     private function formatReservation($reservation, $lang){
-        $reservation = [
-            'order_id' => '#'.$reservation->id,
-            'doctor' => isset($lang) && $lang!=null ? $reservation->appointment->doctor->getTranslation('name', $lang) : $reservation->appointment->doctor->name,
-            'doctor_image' => $reservation->appointment->doctor->image != null ? url($reservation->appointment->doctor->image) : '',
-            'specialty' => isset($lang) && $lang!=null ? $reservation->appointment->doctor->specialty->getTranslation('title', $lang) : $reservation->appointment->doctor->specialty->title,
-            'subspecialty' => isset($lang) && $lang!=null ? $reservation->appointment->doctor->getTranslation('subspecialty', $lang) : $reservation->appointment->doctor->subspecialty,
-            'medical_examination_price' => $reservation->appointment->doctor->medical_examination_price,
-            'date' => $reservation->appointment->date,
-            'from' => $reservation->appointment->from,
-            'to' => $reservation->appointment->to,
-        ];
+        $reservation = [];
+        $doctor = Doctor::first();
+
+        if(isset($doctor) && $doctor!=null){
+            $reservation = [
+                'order_id' => '#'.$reservation->id,
+                'doctor' => $doctor->getTranslation('name', $lang),
+                'doctor_image' => $doctor->image != null ? url($doctor->image) : '',
+                'specialty' => $doctor->specialty->getTranslation('title', $lang),
+                'subspecialty' => $doctor->getTranslation('subspecialty', $lang),
+                'medical_examination_price' => $doctor->medical_examination_price,
+                'date' => $reservation->date,
+                'from' => $reservation->from,
+                'to' => $reservation->to,
+            ];
+        }
 
         return $reservation;
     }
