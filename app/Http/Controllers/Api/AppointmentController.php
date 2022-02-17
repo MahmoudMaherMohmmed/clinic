@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Center;
 use App\Models\Reservation;
 use App\Models\Bank;
+use App\Models\Doctor;
 use App\Models\BankTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
