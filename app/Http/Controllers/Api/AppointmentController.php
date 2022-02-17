@@ -148,7 +148,8 @@ class AppointmentController extends Controller
 
         $reservation = new Reservation();
         $reservation->client_id = $request->user()->id;
-        $reservation->fill($request->only('date', 'from', 'patient_name', 'phone_number', 'gender', 'age', 'description', 'payment_type'));
+        $reservation->fill($request->only('from', 'patient_name', 'phone_number', 'gender', 'age', 'description', 'payment_type'));
+        $reservation->date = $this->formatDate($request->date);
         $reservation->to = date('H:i A', (strtotime(substr($request->from, 0, 5)) + (60*60)) );
         if($reservation->save()){
 
