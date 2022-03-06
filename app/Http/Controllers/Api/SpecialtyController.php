@@ -41,7 +41,7 @@ class SpecialtyController extends Controller
         }
 
         return response()->json(['specialty' => $specialty_data]);
-    }
+    } 
 
     private function formatSpecialty($specialty, $lang){
         $specialty_array = [

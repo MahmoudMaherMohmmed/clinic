@@ -29,4 +29,27 @@ class NewsController extends Controller
 
         return $news_array;
     }
+
+    public function news($id, Request $request){
+        $news_data = [];
+        $news = News::where('id', $id)->first();
+
+        if(isset($news) && $news!=null){
+            $news_data = $this->formatOneNews($news, app()->getLocale());
+        }
+
+        return response()->json(['news' => $news_data], 200);
+    }
+
+    private function formatOneNews($news, $lang){
+        $news_array = [
+            'id' => $new->id,
+            'title' => $new->getTranslation('title', $lang),
+            'description' => $new->getTranslation('description', $lang),
+            'image' => isset($new->image) && $new->image!=null ? url($new->image) : '',
+            'created_at' => $news->created_at->diffForHumans(),
+        ];
+
+        return $news_array;
+    }
 }

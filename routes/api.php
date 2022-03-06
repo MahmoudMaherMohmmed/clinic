@@ -25,6 +25,7 @@ Route::middleware('localization')->group(function () {
     Route::get('specialties', 'Api\SpecialtyController@index');
     Route::get('specialty/{id}', 'Api\SpecialtyController@specialty');
     Route::get('news', 'Api\NewsController@index');
+    Route::get('news/{id}/show', 'Api\NewsController@news');
 
     Route::get('about_clinic', 'Api\AppController@aboutClinic');
     Route::get('center', 'Api\AppController@center');
