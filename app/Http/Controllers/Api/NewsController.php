@@ -43,10 +43,10 @@ class NewsController extends Controller
 
     private function formatOneNews($news, $lang){
         $news_array = [
-            'id' => $new->id,
-            'title' => $new->getTranslation('title', $lang),
-            'description' => $new->getTranslation('description', $lang),
-            'image' => isset($new->image) && $new->image!=null ? url($new->image) : '',
+            'id' => $news->id,
+            'title' => $news->getTranslation('title', $lang),
+            'description' => $news->getTranslation('description', $lang),
+            'image' => isset($news->image) && $news->image!=null ? url($news->image) : '',
             'created_at' => $news->created_at->diffForHumans(),
         ];
 
