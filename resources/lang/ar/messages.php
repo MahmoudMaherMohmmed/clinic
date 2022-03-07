@@ -153,7 +153,7 @@ return [
         'status' => 'الحاله',
         'under_review' => 'تحت المراجعه',
         'approved' => 'تم الموافقه عليه',
-        'rejected' => 'تم رفضه',
+        'rejected' => 'تم الغاء',
     ],
     'country' => [
         'country' => 'البلد',

@@ -199,6 +199,50 @@ class AppointmentController extends Controller
         return response()->json(['reservations' => $reservations_array], 200);
     }
 
+    public function clientCurrentReservation(Request $request){
+        $client_id = $request->user()->id;
+        $reservations_array = [];
+
+        $reservations = Reservation::where('client_id', $client_id)->get();
+        if(isset($reservations) && $reservations!=null){
+            foreach($reservations as $reservation){
+                if( $this->formatReservationDate($reservation) >= date('Y-m-d')){
+                    array_push($reservations_array, $this->formatReservation($reservation, app()->getLocale()));
+                }
+            }
+        }
+
+        return response()->json(['reservations' => $reservations_array], 200);
+    }
+
+    public function clientFinishedReservation(Request $request){
+        $client_id = $request->user()->id;
+        $reservations_array = [];
+
+        $reservations = Reservation::where('client_id', $client_id)->get();
+        if(isset($reservations) && $reservations!=null){
+            foreach($reservations as $reservation){
+                if( $this->formatReservationDate($reservation) < date('Y-m-d')){
+                    array_push($reservations_array, $this->formatReservation($reservation, app()->getLocale()));
+                }
+            }
+        }
+
+        return response()->json(['reservations' => $reservations_array], 200);
+    }
+
+    public function clientReservationShow($reservation_id, Request $request){
+        $client_id = $request->user()->id;
+        $reservation_array = [];
+
+        $reservation = Reservation::where('id', $reservation_id)->first();
+        if(isset($reservation) && $reservation!=null){
+            $reservation_array = $this->formatReservation($reservation, app()->getLocale());
+        }
+
+        return response()->json(['reservation' => $reservation_array], 200);
+    }
+
     private function formatReservation($reservation, $lang){
         $reservation_array = [];
         $doctor = Doctor::first();
@@ -220,6 +264,25 @@ class AppointmentController extends Controller
         return $reservation_array;
     }
 
+    public function clientReservationCancel(Request $request){
+        $Validated = Validator::make($request->all(), [
+            'reservation_id' => 'required',
+        ]);
+
+        if($Validated->fails())
+            return response()->json($Validated->messages(), 403);
+
+        $reservation = Reservation::where('id', $request->reservation_id)->first();
+        if(isset($reservation) && $reservation!=null){
+            $reservation->status = 0;
+            if($reservation->save()){
+                return response()->json(['message' => trans('api.reservation_cancelled_successfully')], 403);
+            }
+        }
+
+        return response()->json(['message' => trans('api.reservation_not_found')], 403);
+    }
+
       /**
      * handle image file that return file path
      * @param File $file
@@ -228,5 +291,9 @@ class AppointmentController extends Controller
     public function handleFile(UploadedFile $file)
     {
         return $this->uploaderService->upload($file, self::IMAGE_PATH);
+    }
+
+    private function formatReservationDate($reservation){
+        return Carbon::parse($reservation->date)->format('Y-m-d');
     }
 }

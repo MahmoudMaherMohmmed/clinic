@@ -44,7 +44,11 @@ Route::middleware('localization')->group(function () {
         Route::get('appointments', 'Api\AppointmentController@appointments');
         Route::post('day_appointments', 'Api\AppointmentController@dayAppointments');
         route::post('appointment/reserve', 'Api\AppointmentController@reserveAppointment');
-        route::post('client/reservation', 'Api\AppointmentController@clientReservations');
+        route::post('client/reservations', 'Api\AppointmentController@clientReservations');
+        route::get('client/reservations/current', 'Api\AppointmentController@clientCurrentReservation');
+        route::get('client/reservations/finished', 'Api\AppointmentController@clientFinishedReservation');
+        route::post('client/reservation/cancel', 'Api\AppointmentController@clientReservationCancel');
+        route::get('client/reservation/{id}/show', 'Api\AppointmentController@clientReservationShow');
         Route::post('messages', 'Api\MessageController@index');
         Route::post('message/create', 'Api\MessageController@create');
         Route::get('notifications', 'Api\NotificationController@index');

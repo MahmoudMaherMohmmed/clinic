@@ -8,5 +8,7 @@ return [
     'logout' => 'Successfully logged out.',
     'send_successfully' => 'Your Message Sent Successfully',
     'miss_configration' => 'No Contact Mail is configured',
-    'verify_code' => 'Your account has been successfully activated.',
+    'verify_code' => 'Your account has been successfully activated.', 
+    'reservation_not_found' => 'This reservation is not in our system.',
+    'reservation_cancelled_successfully' => 'This reservation cancelled successfully.',
 ];

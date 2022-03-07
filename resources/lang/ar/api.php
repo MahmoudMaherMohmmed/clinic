@@ -9,4 +9,6 @@ return [
     'send_successfully' => 'تم ارسال رسالتك بنجاج',
     'miss_configration' => 'لم يتم اعداد الميل المرسل من خلاله',
     'verify_code' => 'تم تفعيل الحساب الخاص بك بنجاح',
+    'reservation_not_found' => 'هذا الحجز غير موجود فى النظام',
+    'reservation_cancelled_successfully' => 'تم الغاء الحجز بنجاح',
 ];

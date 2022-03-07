@@ -578,7 +578,7 @@ if (Config::get('languages')[App::getLocale()] == "English") {
                 @yield('content')
             </div>
             <div class="footer" align="center" style=" position: absolute; width: 100%; bottom: 0;">
-                <p>{{\Carbon\Carbon::now()->year}} © Massara</p>
+                <p>{{\Carbon\Carbon::now()->year}} © Clinic</p>
             </div>
             <a id="btn-scrollup" class="btn btn-circle btn-lg" href="#"><i class="fa fa-chevron-up"></i></a>
         </div>
