@@ -24,6 +24,7 @@ class NewsController extends Controller
                 'title' => $new->getTranslation('title', $lang),
                 'description' => $new->getTranslation('description', $lang),
                 'image' => isset($new->image) && $new->image!=null ? url($new->image) : '',
+                'created_at' => $new->created_at->diffForHumans(),
             ]);
         }
 
