@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\News;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class NewsController extends Controller
@@ -43,12 +44,17 @@ class NewsController extends Controller
     }
 
     private function formatOneNews($news, $lang){
+        $android_link = Setting::where('key', 'android_link')->first();
+        $ios_link = Setting::where('key', 'ios_link')->first();
+       
         $news_array = [
             'id' => $news->id,
             'title' => $news->getTranslation('title', $lang),
             'description' => $news->getTranslation('description', $lang),
             'image' => isset($news->image) && $news->image!=null ? url($news->image) : '',
             'created_at' => $news->created_at->diffForHumans(),
+            'android_link' => isset($android_link)&&$android_link!=null ? $android_link->value : null,
+            'ios_link' => isset($ios_link)&&$ios_link!=null ? $ios_link->value : null,
         ];
 
         return $news_array;
