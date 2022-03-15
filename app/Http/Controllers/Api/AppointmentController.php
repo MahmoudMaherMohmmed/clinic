@@ -88,7 +88,7 @@ class AppointmentController extends Controller
     }
 
     private function checkAppointmentDay($day, $working_days){
-        if( in_array(strtolower($day->format('D')), $working_days) ){
+        if( in_array(strtolower($day->format('D')), $working_days) && $day->format('Y-m-d') > date("Y-m-d")){
             return true;
         }
 
