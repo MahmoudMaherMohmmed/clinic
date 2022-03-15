@@ -18,6 +18,8 @@ class NewsController extends Controller
 
     private function formatNews($news, $lang){
         $news_array = [];
+        $android_link = Setting::where('key', 'android_link')->first();
+        $ios_link = Setting::where('key', 'ios_link')->first();
 
         foreach($news as $new){
             array_push($news_array, [
@@ -26,6 +28,8 @@ class NewsController extends Controller
                 'description' => $new->getTranslation('description', $lang),
                 'image' => isset($new->image) && $new->image!=null ? url($new->image) : '',
                 'created_at' => $new->created_at->diffForHumans(),
+                'android_link' => isset($android_link)&&$android_link!=null ? $android_link->value : null,
+                'ios_link' => isset($ios_link)&&$ios_link!=null ? $ios_link->value : null,
             ]);
         }
 
