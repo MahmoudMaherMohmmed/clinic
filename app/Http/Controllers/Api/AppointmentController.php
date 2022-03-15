@@ -249,7 +249,7 @@ class AppointmentController extends Controller
 
         if(isset($doctor) && $doctor!=null){
             $reservation_array = [
-                'order_id' => '#'.$reservation->id,
+                'order_id' => $reservation->id,
                 'doctor' => $doctor->getTranslation('name', $lang),
                 'doctor_image' => $doctor->image != null ? url($doctor->image) : '',
                 'specialty' => $doctor->specialty->getTranslation('title', $lang),
