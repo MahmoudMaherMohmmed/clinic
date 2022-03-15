@@ -203,7 +203,7 @@ class AppointmentController extends Controller
         $client_id = $request->user()->id;
         $reservations_array = [];
 
-        $reservations = Reservation::where('client_id', $client_id)->get();
+        $reservations = Reservation::where('client_id', $client_id)->where('status', '!=', 0)->get();
         if(isset($reservations) && $reservations!=null){
             foreach($reservations as $reservation){
                 if( $this->formatReservationDate($reservation) >= date('Y-m-d')){
@@ -222,7 +222,7 @@ class AppointmentController extends Controller
         $reservations = Reservation::where('client_id', $client_id)->get();
         if(isset($reservations) && $reservations!=null){
             foreach($reservations as $reservation){
-                if( $this->formatReservationDate($reservation) < date('Y-m-d')){
+                if( ($this->formatReservationDate($reservation) < date('Y-m-d')) || ($this->formatReservationDate($reservation) >= date('Y-m-d') && $reservation->status==0 )){
                     array_push($reservations_array, $this->formatReservation($reservation, app()->getLocale()));
                 }
             }
