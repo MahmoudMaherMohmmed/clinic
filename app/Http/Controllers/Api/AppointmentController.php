@@ -258,6 +258,7 @@ class AppointmentController extends Controller
                 'date' => $reservation->date,
                 'from' => $reservation->from,
                 'to' => $reservation->to,
+                'status' => $reservation->status,
             ];
         }
 
