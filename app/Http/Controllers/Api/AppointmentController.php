@@ -276,7 +276,7 @@ class AppointmentController extends Controller
         if(isset($reservation) && $reservation!=null){
             $reservation->status = 0;
             if($reservation->save()){
-                return response()->json(['message' => trans('api.reservation_cancelled_successfully')], 403);
+                return response()->json(['message' => trans('api.reservation_cancelled_successfully')], 200);
             }
         }
 
